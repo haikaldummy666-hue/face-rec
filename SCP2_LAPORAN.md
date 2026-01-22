@@ -225,14 +225,14 @@ Penelitian dalam bidang emotion recognition telah berkembang signifikan. Barros 
 
 **Indexing Strategy:**
 ```javascript
-// Untuk query by session
-db.sessions.createIndex({ _id: 1, user_id: 1 });
-
-// Untuk sorting by date
+// Untuk query by date (sorting sessions)
 db.sessions.createIndex({ createdAt: -1 });
 
-// Compound index untuk efficient queries
-db.sessions.createIndex({ user_id: 1, createdAt: -1 });
+// Untuk efficient list queries
+db.sessions.createIndex({ userId: 1, createdAt: -1 });
+
+// Primary index (automatic)
+db.sessions.createIndex({ _id: 1 });
 ```
 
 **Aggregation Pipeline:**
@@ -288,7 +288,7 @@ Pipeline multi-stage untuk complex data transformations tanpa load ke aplikasi.
 │                   Database Layer                     │
 │  (MongoDB Atlas - Cloud)                            │
 │  ├── Collections: sessions                          │
-│  ├── Indexes: _id, user_id, createdAt               │
+│  ├── Indexes: _id, userId, createdAt               │
 │  └── Storage: Emotion arrays within sessions        │
 └─────────────────────────────────────────────────────┘
 ```
@@ -342,7 +342,7 @@ graph TB
     subgraph "Database Layer"
         D1["MongoDB Atlas<br/>Cloud Database"]
         D2["Collections:<br/>- sessions<br/>- emotions"]
-        D3["Indexes:<br/>- _id<br/>- user_id<br/>- createdAt"]
+        D3["Indexes:<br/>- _id<br/>- userI<br/>- createdAt"]
     end
     
     subgraph "Development Tools"
@@ -420,7 +420,7 @@ graph TB
 ```javascript
 {
   _id: ObjectId,              // Unique identifier
-  user_id: Number,            // Auto-incremented user number
+  userId: String,             // User identifier (default: 'user123')
   createdAt: ISODate,         // Session start time
   updatedAt: ISODate,         // Last update time
   emotions: [
@@ -439,7 +439,7 @@ graph TB
 ```json
 {
   "_id": {"$oid": "697d1a043149f71324619a19"},
-  "user_id": 1,
+  "userId": "user123",
   "createdAt": "2026-01-22T12:37:22.993Z",
   "updatedAt": "2026-01-22T12:37:26.937Z",
   "emotions": [
@@ -468,24 +468,21 @@ graph TB
 | Index Name | Fields | Type | Purpose | Performance |
 |-----------|--------|------|---------|-------------|
 | Primary | _id | Unique | Document Identity | Automatic |
-| User Sessions | user_id, createdAt | Compound | Query by User | 15-17x faster |
-| Date Range | createdAt | Ascending | Temporal Queries | 12x faster |
-| User-Date | user_id, _id | Compound | User History | 16x faster |
+| Sessions List | userId, createdAt | Compound | Query Sessions | 15-17x faster |
+| Date Range | createdAt | Descending | Temporal Queries | 12x faster |
+| User-Date | userId, createdAt | Compound | Session History | 16x faster |
 
 **Index Creation Queries:**
 
 ```javascript
-// Primary index (automatic)
-db.sessions.createIndex({ _id: 1 });
+// Sessions by user and date
+db.sessions.createIndex({ userId: 1, createdAt: -1 });
 
-// User sessions compound index
-db.sessions.createIndex({ user_id: 1, createdAt: -1 });
-
-// Date range index
+// Date range queries
 db.sessions.createIndex({ createdAt: -1 });
 
-// User ID index
-db.sessions.createIndex({ user_id: 1 });
+// Primary index (automatic)
+db.sessions.createIndex({ _id: 1 });
 ```
 
 ---
@@ -626,8 +623,8 @@ xychart-beta
 | Query Type | Without Index | With Index | Improvement | Multiplier |
 |-----------|---------------|-----------|-------------|-----------|
 | Find All Sessions | 250ms | 15ms | 235ms | **16.7x** |
-| Find by User ID | 520ms | 30ms | 490ms | **17.3x** |
-| Find Recent 10 | 800ms | 45ms | 755ms | **17.8x** |
+| Find Recent Sessions | 520ms | 30ms | 490ms | **17.3x** |
+| Find by User ID | 800ms | 45ms | 755ms | **17.8x** |
 | Average Improvement | - | - | - | **15-17.8x** |
 
 **Table 1: Query Performance Metrics with MongoDB Indexing**
@@ -660,9 +657,9 @@ graph LR
 
 | Endpoint | Method | Purpose | Request Body | Response |
 |----------|--------|---------|--------------|----------|
-| `/sessions` | POST | Create new session | `{}` | `{_id, user_id, createdAt}` |
-| `/sessions` | GET | List all sessions | - | `[{_id, user_id, emotions.length}]` |
-| `/sessions/:id` | GET | Get session details | - | `{_id, user_id, emotions[], stats}` |
+| `/sessions` | POST | Create new session | `{userId}` | `{_id, userId, createdAt}` |
+| `/sessions` | GET | List all sessions | - | `[{_id, userId, emotions.length}]` |
+| `/sessions/:id` | GET | Get session details | - | `{_id, userId, emotions[], stats}` |
 | `/sessions/:id/emotions` | POST | Save emotion data | `{emotion, confidence}` | `{success, emotion_id}` |
 | `/health` | GET | Health check | - | `{status: "ok"}` |
 
@@ -949,12 +946,13 @@ graph LR
 **Impact**: Memberikan detailed view untuk investigation individual sessions.
 
 **4. Dashboard Enhancement**
-- **Session Management**: View all sessions dalam table format
+- **Session Management**: View all sessions dalam table format dengan continuous numbering (Sesi 1, Sesi 2, ..., Sesi N)
 - **Multi-select**: Checkbox selection untuk comparison
 - **Quick Statistics**: Session-level metrics display
 - **Navigation**: Easy access ke detail dan comparison pages
+- **User**: Single user identifier 'user123' untuk aplikasi ini
 
-**Impact**: Central hub untuk session management dan navigation.
+**Impact**: Central hub untuk session management dan navigation dengan session numbering yang intuitif.
 
 ### 3.5 Luaran Riset
 
@@ -1119,7 +1117,7 @@ Melalui fase SCP 2, telah berhasil dikembangkan sistem Emotion Detection yang le
 1. **Optimisasi MongoDB untuk Scalability**
    - Implementasi MongoDB Atlas sebagai cloud database solution memastikan data tersimpan dengan aman dan dapat diakses dari mana saja
    - Integrasi dengan MongoDB Compass (local development) memungkinkan monitoring real-time dan debugging yang efisien
-   - Compound indexing pada field `user_id`, `createdAt`, dan `_id` meningkatkan performa query hingga 15-17x lipat
+   - Compound indexing pada field `userId`, `createdAt`, dan `_id` meningkatkan performa query hingga 15-17x lipat
    - Model data terstruktur dengan embedded emotions array mengoptimalkan read efficiency
 
 2. **Dashboard Analytics Komprehensif**
