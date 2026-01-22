@@ -150,33 +150,69 @@ export default function Analytics() {
 
     // Time series line chart
     const sortedDates = Object.keys(emotionsByDay).sort();
-    const lineData = {
-      labels: sortedDates,
-      datasets: Object.keys(emotionCounts).map((emotion, idx) => ({
-        label: emotion.charAt(0).toUpperCase() + emotion.slice(1),
-        data: sortedDates.map(date => emotionsByDay[date][emotion]),
-        borderColor: [
-          '#fbbf24',
-          '#3b82f6',
-          '#ef4444',
-          '#a78bfa',
-          '#9ca3af',
-          '#d8b4fe',
-          '#4ade80',
-        ][idx],
-        backgroundColor: `rgba(${[
-          [251, 191, 36],
-          [59, 130, 246],
-          [239, 68, 68],
-          [167, 139, 250],
-          [156, 163, 175],
-          [216, 180, 254],
-          [74, 222, 128],
-        ][idx].join(',')}, 0.1)`,
-        tension: 0.4,
-        fill: true,
-      })),
-    };
+    
+    let lineData;
+    if (sortedDates.length > 0) {
+      lineData = {
+        labels: sortedDates,
+        datasets: Object.keys(emotionCounts).map((emotion, idx) => ({
+          label: emotion.charAt(0).toUpperCase() + emotion.slice(1),
+          data: sortedDates.map(date => emotionsByDay[date][emotion]),
+          borderColor: [
+            '#fbbf24',
+            '#3b82f6',
+            '#ef4444',
+            '#a78bfa',
+            '#9ca3af',
+            '#d8b4fe',
+            '#4ade80',
+          ][idx],
+          backgroundColor: `rgba(${[
+            [251, 191, 36],
+            [59, 130, 246],
+            [239, 68, 68],
+            [167, 139, 250],
+            [156, 163, 175],
+            [216, 180, 254],
+            [74, 222, 128],
+          ][idx].join(',')}, 0.1)`,
+          tension: 0.4,
+          fill: true,
+        })),
+      };
+    } else {
+      // Fallback: group by session instead of date
+      lineData = {
+        labels: sessionList.map((s, idx) => `Session ${idx + 1}`),
+        datasets: Object.keys(emotionCounts).map((emotion, idx) => ({
+          label: emotion.charAt(0).toUpperCase() + emotion.slice(1),
+          data: sessionList.map(session => {
+            const count = (session.emotions || []).filter(e => (e?.emotion || 'neutral') === emotion).length;
+            return count;
+          }),
+          borderColor: [
+            '#fbbf24',
+            '#3b82f6',
+            '#ef4444',
+            '#a78bfa',
+            '#9ca3af',
+            '#d8b4fe',
+            '#4ade80',
+          ][idx],
+          backgroundColor: `rgba(${[
+            [251, 191, 36],
+            [59, 130, 246],
+            [239, 68, 68],
+            [167, 139, 250],
+            [156, 163, 175],
+            [216, 180, 254],
+            [74, 222, 128],
+          ][idx].join(',')}, 0.1)`,
+          tension: 0.4,
+          fill: true,
+        })),
+      };
+    }
 
     // Bar chart for session comparison
     const barData = {
@@ -328,26 +364,32 @@ export default function Analytics() {
             {/* Time Series Chart */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Emotion Trends Over Time</h2>
-              <div style={{ height: '400px' }}>
-                <Line
-                  data={chartData.line}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        display: true,
-                        position: 'top',
+              {chartData?.line && chartData.line.labels && chartData.line.labels.length > 0 ? (
+                <div style={{ height: '400px' }}>
+                  <Line
+                    data={chartData.line}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: true,
+                          position: 'top',
+                        },
                       },
-                    },
-                    scales: {
-                      y: {
-                        beginAtZero: true,
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                        },
                       },
-                    },
-                  }}
-                />
-              </div>
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500">No data available for trend analysis</p>
+                </div>
+              )}
             </div>
           </>
         )}
