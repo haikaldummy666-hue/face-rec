@@ -111,7 +111,8 @@ export default function Analytics() {
 
         (session.emotions || []).forEach(emotion => {
           try {
-            const exp = emotion?.expressions?.[0] || 'neutral';
+            // emotion object has emotion (string) and confidence (number)
+            const exp = emotion?.emotion || 'neutral';
             if (emotionCounts.hasOwnProperty(exp)) {
               emotionCounts[exp]++;
               emotionsByDay[date][exp]++;
@@ -214,7 +215,7 @@ export default function Analytics() {
     try {
       (session.emotions || []).forEach(emotion => {
         try {
-          const exp = emotion?.expressions?.[0] || 'neutral';
+          const exp = emotion?.emotion || 'neutral';
           emotionStats[exp] = (emotionStats[exp] || 0) + 1;
         } catch (e) {
           console.error('Error in emotion processing:', emotion, e);

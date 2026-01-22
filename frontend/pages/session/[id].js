@@ -101,7 +101,8 @@ export default function SessionDetail() {
     const emotionCounts = {};
     sessionData.emotions.forEach(emotion => {
       try {
-        const primary = emotion?.expressions?.[0] || 'neutral';
+        // emotion object has emotion (string) and confidence (number)
+        const primary = emotion?.emotion || 'neutral';
         if (primary) {
           emotionCounts[primary] = (emotionCounts[primary] || 0) + 1;
         }
@@ -113,8 +114,8 @@ export default function SessionDetail() {
     // Timeline data for line chart
     const timelineData = sessionData.emotions.map((emotion, index) => ({
       index,
-      expression: emotion?.expressions?.[0] || 'neutral',
-      confidence: emotion?.confidences?.[0] || 0,
+      expression: emotion?.emotion || 'neutral',
+      confidence: emotion?.confidence || 0,
     }));
 
     // Pie chart data
@@ -244,7 +245,7 @@ export default function SessionDetail() {
   const emotionStats = {};
   session.emotions.forEach(emotion => {
     try {
-      const primary = emotion?.expressions?.[0] || 'neutral';
+      const primary = emotion?.emotion || 'neutral';
       emotionStats[primary] = (emotionStats[primary] || 0) + 1;
     } catch (e) {
       console.error('Error processing emotion for stats:', emotion, e);
