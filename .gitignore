@@ -28,7 +28,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -48,6 +47,28 @@ MANIFEST
 *.db
 *.sqlite
 *.sqlite3
+mongodb/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Misc
+.cache/
+*.tmp
+temp/
 mongodb/
 
 # IDE
