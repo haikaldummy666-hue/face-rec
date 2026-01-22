@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {
-  Chart as ChartJS,
+  Chart as ChartJSLib,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -14,22 +14,8 @@ import {
   ArcElement,
 } from 'chart.js';
 
-const Line = dynamic(() => import('react-chartjs-2').then(mod => mod.Line), {
-  ssr: false,
-  loading: () => <div>Loading chart...</div>
-});
-
-const Bar = dynamic(() => import('react-chartjs-2').then(mod => mod.Bar), {
-  ssr: false,
-  loading: () => <div>Loading chart...</div>
-});
-
-const Doughnut = dynamic(() => import('react-chartjs-2').then(mod => mod.Doughnut), {
-  ssr: false,
-  loading: () => <div>Loading chart...</div>
-});
-
-ChartJS.register(
+// Register Chart.js components
+ChartJSLib.register(
   CategoryScale,
   LinearScale,
   PointElement,
@@ -39,6 +25,30 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
+);
+
+const Line = dynamic(
+  () => import('react-chartjs-2').then(mod => mod.Line),
+  {
+    ssr: false,
+    loading: () => <div className="text-center py-8">Loading chart...</div>
+  }
+);
+
+const Bar = dynamic(
+  () => import('react-chartjs-2').then(mod => mod.Bar),
+  {
+    ssr: false,
+    loading: () => <div className="text-center py-8">Loading chart...</div>
+  }
+);
+
+const Doughnut = dynamic(
+  () => import('react-chartjs-2').then(mod => mod.Doughnut),
+  {
+    ssr: false,
+    loading: () => <div className="text-center py-8">Loading chart...</div>
+  }
 );
 
 export default function Analytics() {

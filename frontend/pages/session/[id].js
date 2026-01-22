@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {
-  Chart as ChartJS,
+  Chart as ChartJSLib,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -13,19 +13,10 @@ import {
   Legend,
   ArcElement,
 } from 'chart.js';
-
-const Pie = dynamic(() => import('react-chartjs-2').then(mod => mod.Pie), {
-  ssr: false,
-  loading: () => <div>Loading chart...</div>
-});
-
-const Line = dynamic(() => import('react-chartjs-2').then(mod => mod.Line), {
-  ssr: false,
-  loading: () => <div>Loading chart...</div>
-});
 import styles from '../../src/styles/Dashboard.module.css';
 
-ChartJS.register(
+// Register Chart.js components
+ChartJSLib.register(
   CategoryScale,
   LinearScale,
   PointElement,
@@ -34,6 +25,22 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
+);
+
+const Pie = dynamic(
+  () => import('react-chartjs-2').then(mod => mod.Pie),
+  {
+    ssr: false,
+    loading: () => <div className="text-center py-8">Loading chart...</div>
+  }
+);
+
+const Line = dynamic(
+  () => import('react-chartjs-2').then(mod => mod.Line),
+  {
+    ssr: false,
+    loading: () => <div className="text-center py-8">Loading chart...</div>
+  }
 );
 
 const emotionColors = {
