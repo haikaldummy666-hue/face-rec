@@ -67,19 +67,25 @@ export default function SessionDetail() {
     const fetchSession = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        console.log('Fetching from:', `${apiUrl}/sessions/${id}`);
+        
         const response = await fetch(`${apiUrl}/sessions/${id}`);
+        console.log('Response status:', response.status);
         
         if (!response.ok) {
-          throw new Error('Failed to fetch session');
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`Failed to fetch session: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log('Session data:', data);
         setSession(data);
         processChartData(data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching session:', err);
-        setError('Failed to load session data');
+        console.error('Full error:', err);
+        setError(err.message || 'Failed to load session data');
       } finally {
         setLoading(false);
       }

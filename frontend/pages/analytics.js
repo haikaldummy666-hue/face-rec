@@ -61,15 +61,23 @@ export default function Analytics() {
     const fetchSessions = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-        const response = await fetch(`${apiUrl}/sessions`);
+        console.log('Fetching from:', `${apiUrl}/sessions`);
         
-        if (!response.ok) throw new Error('Failed to fetch sessions');
+        const response = await fetch(`${apiUrl}/sessions`);
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`Failed to fetch sessions: ${response.status}`);
+        }
         
         const data = await response.json();
+        console.log('Sessions data:', data);
         setSessions(data);
         processAnalytics(data);
       } catch (err) {
-        console.error('Error fetching sessions:', err);
+        console.error('Full error:', err);
       } finally {
         setLoading(false);
       }
