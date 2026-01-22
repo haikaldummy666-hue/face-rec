@@ -5,6 +5,7 @@ import styles from '../src/styles/Dashboard.module.css';
 export default function Dashboard() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedSessions, setSelectedSessions] = useState([]);
 
   useEffect(() => {
@@ -13,13 +14,18 @@ export default function Dashboard() {
 
   const fetchSessions = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sessions`);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${apiUrl}/sessions`);
       if (response.ok) {
         const data = await response.json();
         setSessions(Array.isArray(data) ? data : []);
+        setError(null);
+      } else {
+        throw new Error('Failed to fetch sessions');
       }
-    } catch (error) {
-      console.error('Failed to fetch sessions:', error);
+    } catch (err) {
+      console.error('Error fetching sessions:', err);
+      setError('Failed to load sessions');
     } finally {
       setLoading(false);
     }
@@ -33,22 +39,44 @@ export default function Dashboard() {
     );
   };
 
+  const handleCompare = () => {
+    if (selectedSessions.length < 2) {
+      alert('Please select at least 2 sessions to compare');
+      return;
+    }
+    window.location.href = `/compare?ids=${selectedSessions.join(',')}`;
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
 
+  // Calculate statistics
+  const stats = {
+    totalSessions: sessions.length,
+    totalEmotions: sessions.reduce((sum, s) => sum + (s.emotions?.length || 0), 0),
+    avgEmotionsPerSession: sessions.length > 0 
+      ? (sessions.reduce((sum, s) => sum + (s.emotions?.length || 0), 0) / sessions.length).toFixed(1)
+      : 0,
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className={styles['dashboard-container']}>
       {/* Navigation */}
       <nav className="bg-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-2xl font-bold text-indigo-600">Emotion Detection System</h1>
             <div className="flex gap-4">
+              <Link href="/analytics">
+                <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                  📈 Analytics
+                </button>
+              </Link>
               <Link href="/">
-                <a className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                  New Session
-                </a>
+                <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                  + New Session
+                </button>
               </Link>
             </div>
           </div>
@@ -63,36 +91,106 @@ export default function Dashboard() {
           <p className="text-gray-600">Manage and analyze your emotion detection sessions</p>
         </div>
 
+        {/* Statistics Cards */}
+        {!loading && sessions.length > 0 && (
+          <div className={styles['stats-container']}>
+            <div className={styles['stat-card']}>
+              <div className={styles['stat-label']}>Total Sessions</div>
+              <div className={styles['stat-value']}>{stats.totalSessions}</div>
+            </div>
+            <div className={styles['stat-card']}>
+              <div className={styles['stat-label']}>Total Emotions</div>
+              <div className={styles['stat-value']}>{stats.totalEmotions}</div>
+            </div>
+            <div className={styles['stat-card']}>
+              <div className={styles['stat-label']}>Avg Emotions/Session</div>
+              <div className={styles['stat-value']}>{stats.avgEmotionsPerSession}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Comparison Section */}
+        {!loading && sessions.length > 0 && (
+          <div className="bg-white rounded-lg shadow p-6 mb-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-900">
+                Multi-Session Comparison
+              </h2>
+              <button
+                onClick={handleCompare}
+                disabled={selectedSessions.length < 2}
+                className={`px-6 py-2 rounded-lg font-medium transition ${
+                  selectedSessions.length < 2
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                Compare ({selectedSessions.length}) Sessions
+              </button>
+            </div>
+            <p className="text-gray-600 text-sm mt-2">
+              Select at least 2 sessions to compare emotion patterns
+            </p>
+          </div>
+        )}
+
         {/* Sessions Grid */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="text-lg text-gray-600">Loading sessions...</div>
           </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <p className="text-red-800">{error}</p>
+          </div>
         ) : sessions.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
             <p className="text-gray-600 mb-4">No sessions yet. Start a new session to begin!</p>
             <Link href="/">
-              <a className="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+              <button className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
                 Create First Session
-              </a>
+              </button>
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Sessions Table */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-indigo-600 text-white">
-                  <tr>
-                    <th className="px-6 py-4 text-left">Select</th>
-                    <th className="px-6 py-4 text-left">User ID</th>
-                    <th className="px-6 py-4 text-left">Created</th>
-                    <th className="px-6 py-4 text-left">Emotions Recorded</th>
-                    <th className="px-6 py-4 text-left">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {sessions.map((session) => (
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-indigo-600 text-white">
+                <tr>
+                  <th className="px-6 py-4 text-left">
+                    <input
+                      type="checkbox"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedSessions(sessions.map(s => s._id));
+                        } else {
+                          setSelectedSessions([]);
+                        }
+                      }}
+                      checked={selectedSessions.length === sessions.length && sessions.length > 0}
+                      className="rounded"
+                    />
+                  </th>
+                  <th className="px-6 py-4 text-left">User ID</th>
+                  <th className="px-6 py-4 text-left">Created</th>
+                  <th className="px-6 py-4 text-left">Emotions Recorded</th>
+                  <th className="px-6 py-4 text-left">Top Emotion</th>
+                  <th className="px-6 py-4 text-left">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {sessions.map((session) => {
+                  const emotionCounts = {};
+                  (session.emotions || []).forEach(emotion => {
+                    const exp = emotion.expressions?.[0] || 'neutral';
+                    emotionCounts[exp] = (emotionCounts[exp] || 0) + 1;
+                  });
+                  
+                  const topEmotion = Object.entries(emotionCounts).sort(
+                    ([, a], [, b]) => b - a
+                  )[0];
+
+                  return (
                     <tr key={session._id} className="hover:bg-gray-50 transition">
                       <td className="px-6 py-4">
                         <input
@@ -110,62 +208,40 @@ export default function Dashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <Link href={`/session/${session._id}`}>
-                            <a className="text-indigo-600 hover:text-indigo-900 font-medium">View</a>
-                          </Link>
-                          <button
-                            className="text-red-600 hover:text-red-900 font-medium"
-                            onClick={() => {
-                              if (window.confirm('Delete this session?')) {
-                                // Delete logic
-                              }
-                            }}
-                          >
-                            Delete
+                        {topEmotion ? (
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
+                            topEmotion[0] === 'happy'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : topEmotion[0] === 'sad'
+                              ? 'bg-blue-100 text-blue-800'
+                              : topEmotion[0] === 'angry'
+                              ? 'bg-red-100 text-red-800'
+                              : topEmotion[0] === 'surprised'
+                              ? 'bg-purple-100 text-purple-800'
+                              : topEmotion[0] === 'disgusted'
+                              ? 'bg-green-100 text-green-800'
+                              : topEmotion[0] === 'fearful'
+                              ? 'bg-pink-100 text-pink-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {topEmotion[0]} ({topEmotion[1]})
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">No data</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Link href={`/session/${session._id}`}>
+                          <button className="text-indigo-600 hover:text-indigo-900 font-medium">
+                            View Details
                           </button>
-                        </div>
+                        </Link>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Comparison Button */}
-            {selectedSessions.length > 1 && (
-              <div className="flex justify-center">
-                <Link href={`/compare?sessions=${selectedSessions.join(',')}`}>
-                  <a className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
-                    Compare Selected Sessions ({selectedSessions.length})
-                  </a>
-                </Link>
-              </div>
-            )}
-
-            {/* Statistics Card */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-gray-600 text-sm font-medium">Total Sessions</h3>
-                <p className="text-3xl font-bold text-indigo-600 mt-2">{sessions.length}</p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-gray-600 text-sm font-medium">Total Emotions Recorded</h3>
-                <p className="text-3xl font-bold text-indigo-600 mt-2">
-                  {sessions.reduce((sum, s) => sum + (s.emotions?.length || 0), 0)}
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-gray-600 text-sm font-medium">Average Emotions/Session</h3>
-                <p className="text-3xl font-bold text-indigo-600 mt-2">
-                  {sessions.length > 0
-                    ? Math.round(
-                        sessions.reduce((sum, s) => sum + (s.emotions?.length || 0), 0) / sessions.length
-                      )
-                    : 0}
-                </p>
-              </div>
-            </div>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
