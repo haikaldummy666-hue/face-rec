@@ -420,7 +420,7 @@ graph TB
 ```javascript
 {
   _id: ObjectId,              // Unique identifier
-  user_id: String,            // User identifier
+  user_id: Number,            // Auto-incremented user number
   createdAt: ISODate,         // Session start time
   updatedAt: ISODate,         // Last update time
   emotions: [
@@ -439,7 +439,7 @@ graph TB
 ```json
 {
   "_id": {"$oid": "697d1a043149f71324619a19"},
-  "user_id": "user123",
+  "user_id": 1,
   "createdAt": "2026-01-22T12:37:22.993Z",
   "updatedAt": "2026-01-22T12:37:26.937Z",
   "emotions": [
