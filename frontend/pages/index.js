@@ -81,20 +81,36 @@ export default function Home() {
     <div className={styles.container}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h1 className={styles.title}>Real-time Emotion Detection</h1>
-        <Link href="/dashboard">
-          <button style={{
-            padding: '10px 20px',
-            backgroundColor: '#4f46e5',
-            color: 'white',
-            borderRadius: '6px',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: 'bold'
-          }}>
-            📊 View Dashboard
-          </button>
-        </Link>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <Link href="/dashboard">
+            <button style={{
+              padding: '10px 20px',
+              backgroundColor: '#6b7280',
+              color: 'white',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: 'bold'
+            }}>
+              ← Back to Dashboard
+            </button>
+          </Link>
+          <Link href="/analytics">
+            <button style={{
+              padding: '10px 20px',
+              backgroundColor: '#059669',
+              color: 'white',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: 'bold'
+            }}>
+              📊 Analytics
+            </button>
+          </Link>
+        </div>
       </div>
       
       <div className={styles.mainContent}>

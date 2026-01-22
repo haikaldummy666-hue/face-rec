@@ -97,7 +97,7 @@ export default function CompareSessions() {
       };
 
       session.emotions.forEach(emotion => {
-        const exp = emotion.expressions[0] || 'neutral';
+        const exp = emotion?.emotion || 'neutral';
         if (emotions.hasOwnProperty(exp)) {
           emotions[exp]++;
         }
@@ -173,9 +173,7 @@ export default function CompareSessions() {
   const stats = sessions.map(session => {
     const emotions = {};
     session.emotions.forEach(emotion => {
-      const exp = emotion.expressions[0] || 'neutral';
-      emotions[exp] = (emotions[exp] || 0) + 1;
-    });
+        const exp = emotion?.emotion || 'neutral';
 
     const emotionArray = Object.entries(emotions).sort(([, a], [, b]) => b - a);
     return {

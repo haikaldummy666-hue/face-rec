@@ -66,7 +66,14 @@ export default function Dashboard() {
       <nav className="bg-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-indigo-600">Emotion Detection System</h1>
+            <div className="flex items-center gap-4">
+              <Link href="/">
+                <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                  ← Back
+                </button>
+              </Link>
+              <h1 className="text-2xl font-bold text-indigo-600">Emotion Detection System</h1>
+            </div>
             <div className="flex gap-4">
               <Link href="/analytics">
                 <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
