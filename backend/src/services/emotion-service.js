@@ -11,12 +11,27 @@ class EmotionService {
 
   async saveEmotionData(sessionId, emotionData) {
     try {
-      return await Session.findByIdAndUpdate(
+      if (!sessionId) {
+        throw new Error('sessionId is required');
+      }
+      
+      if (!emotionData) {
+        throw new Error('emotionData is required');
+      }
+
+      const result = await Session.findByIdAndUpdate(
         sessionId,
         { $push: { emotions: emotionData } },
-        { new: true }
+        { new: true, runValidators: false }
       );
+      
+      if (!result) {
+        throw new Error(`Session not found: ${sessionId}`);
+      }
+      
+      return result;
     } catch (error) {
+      console.error('Emotion service error:', error);
       throw new Error(`Failed to save emotion data: ${error.message}`);
     }
   }
