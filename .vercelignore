@@ -1,0 +1,6 @@
+backend/
+.git/
+.env
+.env.local
+railway.toml
+Procfile
