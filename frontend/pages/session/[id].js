@@ -171,7 +171,7 @@ export default function SessionDetail() {
       if (session.emotions.length > 0) {
         const emotions = {};
         session.emotions.forEach(e => {
-          const exp = e.expressions[0] || 'neutral';
+          const exp = e?.emotion || 'neutral';
           emotions[exp] = (emotions[exp] || 0) + 1;
         });
 
@@ -196,8 +196,8 @@ export default function SessionDetail() {
     let csv = 'Timestamp,Emotion,Confidence\n';
     session.emotions.forEach(emotion => {
       const timestamp = new Date(emotion.timestamp).toLocaleString();
-      const expression = emotion.expressions[0] || 'neutral';
-      const confidence = emotion.confidences[0] || 0;
+      const expression = emotion?.emotion || 'neutral';
+      const confidence = emotion?.confidence || 0;
       csv += `"${timestamp}","${expression}",${confidence}\n`;
     });
 
@@ -391,25 +391,25 @@ export default function SessionDetail() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
-                        emotion.expressions[0] === 'happy'
+                        emotion?.emotion === 'happy'
                           ? 'bg-yellow-100 text-yellow-800'
-                          : emotion.expressions[0] === 'sad'
+                          : emotion?.emotion === 'sad'
                           ? 'bg-blue-100 text-blue-800'
-                          : emotion.expressions[0] === 'angry'
+                          : emotion?.emotion === 'angry'
                           ? 'bg-red-100 text-red-800'
-                          : emotion.expressions[0] === 'surprised'
+                          : emotion?.emotion === 'surprised'
                           ? 'bg-purple-100 text-purple-800'
-                          : emotion.expressions[0] === 'disgusted'
+                          : emotion?.emotion === 'disgusted'
                           ? 'bg-green-100 text-green-800'
-                          : emotion.expressions[0] === 'fearful'
+                          : emotion?.emotion === 'fearful'
                           ? 'bg-pink-100 text-pink-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}>
-                        {emotion.expressions[0] || 'neutral'}
+                        {emotion?.emotion || 'neutral'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {((emotion.confidences[0] || 0) * 100).toFixed(1)}%
+                      {((emotion?.confidence || 0) * 100).toFixed(1)}%
                     </td>
                   </tr>
                 ))}
