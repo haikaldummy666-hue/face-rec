@@ -6,8 +6,7 @@
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
     "dev": "npm run install-all && concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && npm run dev",
-    "build": "cd frontend && npm run build"
+    "dev:backend": "cd backend && npm run dev"
   },
   "devDependencies": {
     "concurrently": "8.2.2"

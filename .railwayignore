@@ -1,0 +1,6 @@
+frontend/
+.next/
+.git/
+node_modules/
+.env
+.env.local
