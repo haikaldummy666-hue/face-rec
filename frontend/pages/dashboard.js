@@ -41,6 +41,37 @@ export default function Dashboard() {
     );
   };
 
+  const handleDeleteSession = async (sessionId) => {
+    if (!confirm('Are you sure you want to delete this session? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      console.log('Deleting session:', sessionId);
+      
+      const response = await fetch(`${apiUrl}/sessions/${sessionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        console.log('Session deleted successfully');
+        // Remove from local state
+        setSessions(prev => prev.filter(s => s._id !== sessionId));
+        // Remove from selected sessions if it was there
+        setSelectedSessions(prev => prev.filter(id => id !== sessionId));
+      } else {
+        throw new Error('Failed to delete session');
+      }
+    } catch (error) {
+      console.error('Error deleting session:', error);
+      alert('Failed to delete session');
+    }
+  };
+
   const handleCompare = () => {
     if (selectedSessions.length < 2) {
       alert('Please select at least 2 sessions to compare');
@@ -240,11 +271,19 @@ export default function Dashboard() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <Link href={`/session/${session._id}`}>
-                          <button className="text-indigo-600 hover:text-indigo-900 font-medium">
-                            View Details
+                        <div className="flex gap-2">
+                          <Link href={`/session/${session._id}`}>
+                            <button className="text-indigo-600 hover:text-indigo-900 font-medium">
+                              View Details
+                            </button>
+                          </Link>
+                          <button
+                            onClick={() => handleDeleteSession(session._id)}
+                            className="text-red-600 hover:text-red-900 font-medium"
+                          >
+                            Delete
                           </button>
-                        </Link>
+                        </div>
                       </td>
                     </tr>
                   );

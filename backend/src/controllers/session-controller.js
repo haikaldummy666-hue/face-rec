@@ -63,6 +63,26 @@ class SessionController {
       res.status(500).json({ error: error.message });
     }
   }
-}
 
-module.exports = new SessionController();
+  async deleteSession(req, res) {
+    try {
+      const { sessionId } = req.params;
+      
+      if (!sessionId) {
+        return res.status(400).json({ error: 'Missing sessionId' });
+      }
+      
+      console.log('Deleting session:', sessionId);
+      const result = await EmotionService.deleteSession(sessionId);
+      
+      if (!result) {
+        return res.status(404).json({ error: 'Session not found' });
+      }
+      
+      res.json({ message: 'Session deleted successfully', sessionId });
+    } catch (error) {
+      console.error('Delete session error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+}

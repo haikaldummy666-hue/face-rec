@@ -20,12 +20,22 @@ class EmotionService {
       // If userId not provided, auto-generate next one
       const finalUserId = userId || (await this.getNextUserId());
       
-      return await Session.create({ 
+      console.log('Creating session with user_id:', finalUserId);
+      
+      const session = await Session.create({ 
         user_id: finalUserId,
         emotions: [],
         createdAt: new Date(),
         updatedAt: new Date()
       });
+
+      console.log('Session created:', {
+        _id: session._id,
+        user_id: session.user_id,
+        createdAt: session.createdAt
+      });
+      
+      return session;
     } catch (error) {
       throw new Error(`Failed to create session: ${error.message}`);
     }
@@ -81,6 +91,21 @@ class EmotionService {
       return session;
     } catch (error) {
       throw new Error(`Failed to fetch session: ${error.message}`);
+    }
+  }
+
+  async deleteSession(sessionId) {
+    try {
+      const result = await Session.findByIdAndDelete(sessionId);
+      
+      if (!result) {
+        throw new Error(`Session not found: ${sessionId}`);
+      }
+      
+      console.log('Session deleted:', sessionId);
+      return result;
+    } catch (error) {
+      throw new Error(`Failed to delete session: ${error.message}`);
     }
   }
 }

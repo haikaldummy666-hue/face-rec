@@ -26,6 +26,7 @@ app.post('/api/sessions', sessionController.createSession);
 app.get('/api/sessions', sessionController.getAllSessions);
 app.get('/api/sessions/:sessionId', sessionController.getSessionById);
 app.post('/api/sessions/:sessionId/emotions', sessionController.saveEmotionData);
+app.delete('/api/sessions/:sessionId', sessionController.deleteSession);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
