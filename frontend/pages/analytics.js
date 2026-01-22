@@ -157,15 +157,18 @@ export default function Analytics() {
     };
 
     // Time series line chart
-    const sortedDates = Object.keys(emotionsByDay).sort();
+    const sortedDates = Object.keys(emotionsByDay).sort((a, b) => new Date(a) - new Date(b));
     
     let lineData;
     if (sortedDates.length > 0) {
+      // Filter emotions that have at least one occurrence
+      const emotionsWithData = Object.keys(emotionCounts).filter(e => emotionCounts[e] > 0);
+      
       lineData = {
         labels: sortedDates,
-        datasets: Object.keys(emotionCounts).map((emotion, idx) => ({
+        datasets: emotionsWithData.map((emotion, idx) => ({
           label: emotion.charAt(0).toUpperCase() + emotion.slice(1),
-          data: sortedDates.map(date => emotionsByDay[date][emotion]),
+          data: sortedDates.map(date => emotionsByDay[date][emotion] || 0),
           borderColor: [
             '#fbbf24',
             '#3b82f6',
@@ -190,9 +193,11 @@ export default function Analytics() {
       };
     } else {
       // Fallback: group by session instead of date
+      const emotionsWithData = Object.keys(emotionCounts).filter(e => emotionCounts[e] > 0);
+      
       lineData = {
         labels: sessionList.map((s, idx) => `Session ${idx + 1}`),
-        datasets: Object.keys(emotionCounts).map((emotion, idx) => ({
+        datasets: emotionsWithData.map((emotion, idx) => ({
           label: emotion.charAt(0).toUpperCase() + emotion.slice(1),
           data: sessionList.map(session => {
             const count = (session.emotions || []).filter(e => (e?.emotion || 'neutral') === emotion).length;
@@ -206,7 +211,7 @@ export default function Analytics() {
             '#9ca3af',
             '#d8b4fe',
             '#4ade80',
-          ][idx],
+          ][idx % 7],
           backgroundColor: `rgba(${[
             [251, 191, 36],
             [59, 130, 246],

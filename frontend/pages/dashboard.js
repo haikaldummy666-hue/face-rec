@@ -189,7 +189,7 @@ export default function Dashboard() {
                 {sessions.map((session) => {
                   const emotionCounts = {};
                   (session.emotions || []).forEach(emotion => {
-                    const exp = emotion.expressions?.[0] || 'neutral';
+                    const exp = emotion?.emotion || 'neutral';
                     emotionCounts[exp] = (emotionCounts[exp] || 0) + 1;
                   });
                   
@@ -207,7 +207,7 @@ export default function Dashboard() {
                           className="w-4 h-4 text-indigo-600 rounded cursor-pointer"
                         />
                       </td>
-                      <td className="px-6 py-4 text-gray-900 font-medium">{session.user_id}</td>
+                      <td className="px-6 py-4 text-gray-900 font-medium">{session.userId}</td>
                       <td className="px-6 py-4 text-gray-600 text-sm">{formatDate(session.createdAt)}</td>
                       <td className="px-6 py-4">
                         <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
