@@ -13,12 +13,16 @@ const VideoFeed = ({ onEmotionDetected }) => {
 
   useEffect(() => {
     let animationFrame;
+    let lastProcessTime = 0;
+    const DETECTION_INTERVAL = 500; // milliseconds (500ms = 2 per second)
     
     const processFrame = async () => {
-      if (videoRef.current?.readyState === 4) {
+      const now = Date.now();
+      if (videoRef.current?.readyState === 4 && now - lastProcessTime >= DETECTION_INTERVAL) {
         try {
           const result = await detectEmotion(videoRef.current);
           processEmotion(result);
+          lastProcessTime = now;
         } catch (error) {
           console.error('Error detecting emotion:', error);
         }
