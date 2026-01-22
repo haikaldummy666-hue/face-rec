@@ -1,5 +1,5 @@
 import React from 'react';
-import { exportToCSV, exportToPDF } from '@/utils/export-utils';
+import { exportToCSV, exportToPDF } from '../../utils/export-utils';
 import styles from './ExportData.module.css';
 
 const ExportData = ({ sessionData }) => {

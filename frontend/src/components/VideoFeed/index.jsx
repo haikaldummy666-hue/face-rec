@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { detectEmotion } from '@/lib/emotion-detection';
+import { detectEmotion } from '../../lib/emotion-detection';
 import styles from './VideoFeed.module.css';
 
 export const VideoFeed = ({ onEmotionDetected }) => {

@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { useWebcam } from '@/hooks/useWebcam';
-import { useEmotionProcessing } from '@/hooks/useEmotionProcessing';
-import { detectEmotion, initializeDetection } from '@/lib/emotion-detection';
-import EmotionDisplay from '@/components/EmotionDisplay/EmotionDisplay';
+import { useWebcam } from '../../hooks/useWebcam';
+import { useEmotionProcessing } from '../../hooks/useEmotionProcessing';
+import { detectEmotion, initializeDetection } from '../../lib/emotion-detection';
+import EmotionDisplay from '../EmotionDisplay/EmotionDisplay';
 import styles from './VideoFeed.module.css';
 
 const VideoFeed = ({ onEmotionDetected }) => {

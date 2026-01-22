@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { detectEmotion } from '@/lib/emotion-detection';
+import { detectEmotion } from '../lib/emotion-detection';
 
 export const useEmotionDetection = (videoRef) => {
   const [emotion, setEmotion] = useState(null);

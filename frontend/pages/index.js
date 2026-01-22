@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import SessionRecorder from '@/components/SessionRecorder/SessionRecorder';
-// import HeatmapView from '@/components/HeatmapView/HeatmapView';
-import { createSession } from '@/lib/session-manager';
-import styles from '@/styles/Home.module.css';
-//import ExportData from '@/components/ExportData/ExportData';
-import { generateEmotionPDF } from '@/lib/pdf';
+import SessionRecorder from '../src/components/SessionRecorder/SessionRecorder';
+// import HeatmapView from '../src/components/HeatmapView/HeatmapView';
+import { createSession } from '../src/lib/session-manager';
+import styles from '../src/styles/Home.module.css';
+//import ExportData from '../src/components/ExportData/ExportData';
+import { generateEmotionPDF } from '../src/lib/pdf';
 
-const VideoFeed = dynamic(() => import('@/components/VideoFeed/VideoFeed'), {
+const VideoFeed = dynamic(() => import('../src/components/VideoFeed/VideoFeed'), {
   ssr: false,
   loading: () => <div>Loading video feed...</div>
 });
