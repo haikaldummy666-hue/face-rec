@@ -23,6 +23,8 @@ app.use(express.json());
 
 // Routes
 app.post('/api/sessions', sessionController.createSession);
+app.get('/api/sessions', sessionController.getAllSessions);
+app.get('/api/sessions/:sessionId', sessionController.getSessionById);
 app.post('/api/sessions/:sessionId/emotions', sessionController.saveEmotionData);
 
 // Health check endpoint

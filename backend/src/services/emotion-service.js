@@ -35,6 +35,32 @@ class EmotionService {
       throw new Error(`Failed to save emotion data: ${error.message}`);
     }
   }
+
+  async getAllSessions() {
+    try {
+      const sessions = await Session.find()
+        .select('_id user_id createdAt emotions')
+        .sort({ createdAt: -1 });
+      
+      return sessions;
+    } catch (error) {
+      throw new Error(`Failed to fetch sessions: ${error.message}`);
+    }
+  }
+
+  async getSessionById(sessionId) {
+    try {
+      const session = await Session.findById(sessionId);
+      
+      if (!session) {
+        throw new Error(`Session not found: ${sessionId}`);
+      }
+      
+      return session;
+    } catch (error) {
+      throw new Error(`Failed to fetch session: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new EmotionService();

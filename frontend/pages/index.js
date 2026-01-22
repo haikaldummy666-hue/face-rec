@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import SessionRecorder from '../src/components/SessionRecorder/SessionRecorder';
 // import HeatmapView from '../src/components/HeatmapView/HeatmapView';
 import { createSession } from '../src/lib/session-manager';
@@ -78,7 +79,23 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Real-time Emotion Detection</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h1 className={styles.title}>Real-time Emotion Detection</h1>
+        <Link href="/dashboard">
+          <button style={{
+            padding: '10px 20px',
+            backgroundColor: '#4f46e5',
+            color: 'white',
+            borderRadius: '6px',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: 'bold'
+          }}>
+            📊 View Dashboard
+          </button>
+        </Link>
+      </div>
       
       <div className={styles.mainContent}>
         <div className={styles.videoSection}>
