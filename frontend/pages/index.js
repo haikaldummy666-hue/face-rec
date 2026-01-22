@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import SessionRecorder from '../src/components/SessionRecorder/SessionRecorder';
@@ -20,8 +20,7 @@ export default function Home() {
   useEffect(() => {
     const initSession = async () => {
       try {
-        // Auto-increment user_id starts from 1
-        const session = await createSession(1);
+        const session = await createSession('user123');
         setSessionId(session._id);
       } catch (error) {
         console.error('Failed to create session:', error);
@@ -94,7 +93,7 @@ export default function Home() {
               fontSize: '16px',
               fontWeight: 'bold'
             }}>
-              ← Back to Dashboard
+              ΓåÉ Back to Dashboard
             </button>
           </Link>
           <Link href="/analytics">
@@ -108,7 +107,7 @@ export default function Home() {
               fontSize: '16px',
               fontWeight: 'bold'
             }}>
-              📊 Analytics
+              ≡ƒôè Analytics
             </button>
           </Link>
         </div>

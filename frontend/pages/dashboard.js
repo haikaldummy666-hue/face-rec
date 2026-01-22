@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from '../src/styles/Dashboard.module.css';
 
@@ -15,11 +15,9 @@ export default function Dashboard() {
   const fetchSessions = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-      console.log('Fetching sessions from:', apiUrl);
       const response = await fetch(`${apiUrl}/sessions`);
       if (response.ok) {
         const data = await response.json();
-        console.log('Sessions fetched:', data);
         setSessions(Array.isArray(data) ? data : []);
         setError(null);
       } else {
@@ -39,37 +37,6 @@ export default function Dashboard() {
         ? prev.filter(id => id !== sessionId)
         : [...prev, sessionId]
     );
-  };
-
-  const handleDeleteSession = async (sessionId) => {
-    if (!confirm('Are you sure you want to delete this session? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-      console.log('Deleting session:', sessionId);
-      
-      const response = await fetch(`${apiUrl}/sessions/${sessionId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        console.log('Session deleted successfully');
-        // Remove from local state
-        setSessions(prev => prev.filter(s => s._id !== sessionId));
-        // Remove from selected sessions if it was there
-        setSelectedSessions(prev => prev.filter(id => id !== sessionId));
-      } else {
-        throw new Error('Failed to delete session');
-      }
-    } catch (error) {
-      console.error('Error deleting session:', error);
-      alert('Failed to delete session');
-    }
   };
 
   const handleCompare = () => {
@@ -102,7 +69,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <Link href="/">
                 <button className="px-5 py-2 bg-indigo-100 text-indigo-700 font-semibold rounded-lg hover:bg-indigo-200 transition shadow-sm">
-                  ← Back to Emotion Detection
+                  ΓåÉ Back to Emotion Detection
                 </button>
               </Link>
               <h1 className="text-2xl font-bold text-indigo-600">Emotion Detection System</h1>
@@ -110,7 +77,7 @@ export default function Dashboard() {
             <div className="flex gap-4">
               <Link href="/analytics">
                 <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                  📈 Analytics
+                  ≡ƒôê Analytics
                 </button>
               </Link>
               <Link href="/">
@@ -222,7 +189,7 @@ export default function Dashboard() {
                 {sessions.map((session) => {
                   const emotionCounts = {};
                   (session.emotions || []).forEach(emotion => {
-                    const exp = emotion?.emotion || 'neutral';
+                    const exp = emotion.expressions?.[0] || 'neutral';
                     emotionCounts[exp] = (emotionCounts[exp] || 0) + 1;
                   });
                   
@@ -271,19 +238,11 @@ export default function Dashboard() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <Link href={`/session/${session._id}`}>
-                            <button className="text-indigo-600 hover:text-indigo-900 font-medium">
-                              View Details
-                            </button>
-                          </Link>
-                          <button
-                            onClick={() => handleDeleteSession(session._id)}
-                            className="text-red-600 hover:text-red-900 font-medium"
-                          >
-                            Delete
+                        <Link href={`/session/${session._id}`}>
+                          <button className="text-indigo-600 hover:text-indigo-900 font-medium">
+                            View Details
                           </button>
-                        </div>
+                        </Link>
                       </td>
                     </tr>
                   );
