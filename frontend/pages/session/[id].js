@@ -100,17 +100,21 @@ export default function SessionDetail() {
     // Count emotions for pie chart
     const emotionCounts = {};
     sessionData.emotions.forEach(emotion => {
-      const primary = emotion.expressions[0];
-      if (primary) {
-        emotionCounts[primary] = (emotionCounts[primary] || 0) + 1;
+      try {
+        const primary = emotion?.expressions?.[0] || 'neutral';
+        if (primary) {
+          emotionCounts[primary] = (emotionCounts[primary] || 0) + 1;
+        }
+      } catch (e) {
+        console.error('Error processing emotion:', emotion, e);
       }
     });
 
     // Timeline data for line chart
     const timelineData = sessionData.emotions.map((emotion, index) => ({
       index,
-      expression: emotion.expressions[0] || 'neutral',
-      confidence: emotion.confidences[0] || 0,
+      expression: emotion?.expressions?.[0] || 'neutral',
+      confidence: emotion?.confidences?.[0] || 0,
     }));
 
     // Pie chart data
@@ -239,8 +243,12 @@ export default function SessionDetail() {
 
   const emotionStats = {};
   session.emotions.forEach(emotion => {
-    const primary = emotion.expressions[0] || 'neutral';
-    emotionStats[primary] = (emotionStats[primary] || 0) + 1;
+    try {
+      const primary = emotion?.expressions?.[0] || 'neutral';
+      emotionStats[primary] = (emotionStats[primary] || 0) + 1;
+    } catch (e) {
+      console.error('Error processing emotion for stats:', emotion, e);
+    }
   });
 
   const mostFrequentEmotion = Object.entries(emotionStats).sort(

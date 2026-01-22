@@ -103,18 +103,26 @@ export default function Analytics() {
     const emotionsByDay = {};
 
     sessionList.forEach(session => {
-      const date = new Date(session.createdAt).toLocaleDateString();
-      if (!emotionsByDay[date]) {
-        emotionsByDay[date] = { ...emotionCounts };
-      }
-
-      (session.emotions || []).forEach(emotion => {
-        const exp = emotion.expressions[0] || 'neutral';
-        if (emotionCounts.hasOwnProperty(exp)) {
-          emotionCounts[exp]++;
-          emotionsByDay[date][exp]++;
+      try {
+        const date = new Date(session.createdAt).toLocaleDateString();
+        if (!emotionsByDay[date]) {
+          emotionsByDay[date] = { ...emotionCounts };
         }
-      });
+
+        (session.emotions || []).forEach(emotion => {
+          try {
+            const exp = emotion?.expressions?.[0] || 'neutral';
+            if (emotionCounts.hasOwnProperty(exp)) {
+              emotionCounts[exp]++;
+              emotionsByDay[date][exp]++;
+            }
+          } catch (e) {
+            console.error('Error processing emotion:', emotion, e);
+          }
+        });
+      } catch (e) {
+        console.error('Error processing session:', session, e);
+      }
     });
 
     // Doughnut chart
@@ -203,10 +211,18 @@ export default function Analytics() {
 
   const emotionStats = {};
   sessions.forEach(session => {
-    (session.emotions || []).forEach(emotion => {
-      const exp = emotion.expressions[0] || 'neutral';
-      emotionStats[exp] = (emotionStats[exp] || 0) + 1;
-    });
+    try {
+      (session.emotions || []).forEach(emotion => {
+        try {
+          const exp = emotion?.expressions?.[0] || 'neutral';
+          emotionStats[exp] = (emotionStats[exp] || 0) + 1;
+        } catch (e) {
+          console.error('Error in emotion processing:', emotion, e);
+        }
+      });
+    } catch (e) {
+      console.error('Error in session processing:', session, e);
+    }
   });
 
   const mostFrequentEmotion = Object.entries(emotionStats).sort(
