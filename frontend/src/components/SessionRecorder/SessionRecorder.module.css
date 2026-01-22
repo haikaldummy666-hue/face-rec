@@ -1,0 +1,27 @@
+.recorderContainer {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  .recordButton {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: none;
+    background: #dc2626;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .recordButton:hover {
+    background: #b91c1c;
+  }
+  
+  .recording {
+    background: #059669;
+  }
+  
+  .recording:hover {
+    background: #047857;
+  }

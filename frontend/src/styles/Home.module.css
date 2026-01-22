@@ -1,0 +1,72 @@
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .mainContent {
+     /* display: grid; */
+    /* gap: 2rem;  */
+    grid-template-columns: 1fr;
+  }
+  
+  .videoSection {
+    position: relative;
+  }
+  
+  .heatmapSection {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .playbackSection {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .playbackVideo {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+    border-radius: 4px;
+  }
+  
+  @media (min-width: 1024px) {
+    .mainContent {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .exportButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #0070f3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .exportButton:hover {
+    background-color: #005bb5;
+  }
+  
+  .exportButton:active {
+    background-color: #003e7e;
+  }
+  
