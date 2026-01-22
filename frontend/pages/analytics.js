@@ -349,75 +349,7 @@ export default function Analytics() {
               </div>
             </div>
 
-            {/* Time Series Chart */}
-            <div className="bg-white rounded-lg shadow p-6 mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Emotion Trends Over Time</h2>
-              {chartData?.line?.labels?.length > 0 && chartData?.line?.datasets?.length > 0 ? (
-                <div style={{ height: '400px', position: 'relative' }}>
-                  <Line
-                    data={chartData.line}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      interaction: {
-                        mode: 'nearest',
-                        intersect: false,
-                      },
-                      plugins: {
-                        legend: {
-                          display: true,
-                          position: 'top',
-                        },
-                        tooltip: {
-                          enabled: true,
-                          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                          titleColor: '#fff',
-                          bodyColor: '#fff',
-                          borderColor: '#fff',
-                          borderWidth: 1,
-                          padding: 12,
-                          displayColors: false,
-                          callbacks: {
-                            title: (context) => {
-                              const dataPoint = context[0]?.raw;
-                              if (dataPoint?.timestamp) {
-                                return new Date(dataPoint.timestamp).toLocaleString();
-                              }
-                              return `Detection #${context[0]?.dataIndex + 1}`;
-                            },
-                            label: (context) => {
-                              const dataPoint = context.raw;
-                              return [
-                                `Emotion: ${dataPoint.emotion?.toUpperCase()}`,
-                                `Confidence: ${(dataPoint.confidence * 100).toFixed(1)}%`
-                              ];
-                            }
-                          }
-                        },
-                      },
-                      scales: {
-                        y: {
-                          display: false,
-                          beginAtZero: true,
-                          max: 1,
-                        },
-                        x: {
-                          ticks: {
-                            maxRotation: 45,
-                            minRotation: 0,
-                            maxTicksLimit: 20,
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-gray-500">No data available for trend analysis</p>
-                </div>
-              )}
-            </div>
+
           </>
         )}
 

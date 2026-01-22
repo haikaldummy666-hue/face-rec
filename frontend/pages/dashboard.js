@@ -178,7 +178,7 @@ export default function Dashboard() {
                       className="rounded"
                     />
                   </th>
-                  <th className="px-6 py-4 text-left">User ID</th>
+                  <th className="px-6 py-4 text-left">Session</th>
                   <th className="px-6 py-4 text-left">Created</th>
                   <th className="px-6 py-4 text-left">Emotions Recorded</th>
                   <th className="px-6 py-4 text-left">Top Emotion</th>
@@ -186,7 +186,7 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {sessions.map((session) => {
+                {sessions.map((session, index) => {
                   const emotionCounts = {};
                   (session.emotions || []).forEach(emotion => {
                     const exp = emotion?.emotion || 'neutral';
@@ -196,6 +196,8 @@ export default function Dashboard() {
                   const topEmotion = Object.entries(emotionCounts).sort(
                     ([, a], [, b]) => b - a
                   )[0];
+                  
+                  const sessionNumber = sessions.length - index;
 
                   return (
                     <tr key={session._id} className="hover:bg-gray-50 transition">
@@ -207,7 +209,7 @@ export default function Dashboard() {
                           className="w-4 h-4 text-indigo-600 rounded cursor-pointer"
                         />
                       </td>
-                      <td className="px-6 py-4 text-gray-900 font-medium">{session.userId}</td>
+                      <td className="px-6 py-4 text-gray-900 font-medium">Sesi {sessionNumber}</td>
                       <td className="px-6 py-4 text-gray-600 text-sm">{formatDate(session.createdAt)}</td>
                       <td className="px-6 py-4">
                         <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">

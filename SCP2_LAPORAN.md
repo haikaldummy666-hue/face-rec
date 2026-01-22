@@ -926,10 +926,9 @@ graph LR
 
 **1. Analytics Dashboard**
 - **Metrics Cards**: Total sessions, total emotions, averages
-- **Doughnut Chart**: Overall emotion distribution
-- **Line Chart**: Emotion trends over time
-- **Bar Chart**: Recent session activity
-- **Statistics Table**: Detailed emotion statistics dengan percentages
+- **Doughnut Chart**: Overall emotion distribution dengan percentage per emotion
+- **Bar Chart**: Recent session activity dengan emotion count per session
+- **Statistics Table**: Detailed emotion statistics dengan percentages dan distribution bars
 
 **Impact**: Memberikan high-level insights tentang emotion patterns secara keseluruhan.
 
