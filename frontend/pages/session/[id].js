@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Pie, Line } from 'react-chartjs-2';
+import dynamic from 'next/dynamic';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,6 +13,16 @@ import {
   Legend,
   ArcElement,
 } from 'chart.js';
+
+const Pie = dynamic(() => import('react-chartjs-2').then(mod => mod.Pie), {
+  ssr: false,
+  loading: () => <div>Loading chart...</div>
+});
+
+const Line = dynamic(() => import('react-chartjs-2').then(mod => mod.Line), {
+  ssr: false,
+  loading: () => <div>Loading chart...</div>
+});
 import styles from '../../src/styles/Dashboard.module.css';
 
 ChartJS.register(
