@@ -339,7 +339,7 @@ export default function CompareSessions() {
                       {(() => {
                         const emotions = {};
                         session.emotions.forEach(e => {
-                          const exp = e.expressions[0] || 'neutral';
+                          const exp = e?.emotion || 'neutral';
                           emotions[exp] = (emotions[exp] || 0) + 1;
                         });
                         const mostFreq = Object.entries(emotions).sort(
