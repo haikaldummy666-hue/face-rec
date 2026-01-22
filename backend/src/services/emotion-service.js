@@ -39,7 +39,7 @@ class EmotionService {
   async getAllSessions() {
     try {
       const sessions = await Session.find()
-        .select('_id user_id createdAt emotions')
+        .select('_id userId createdAt emotions')
         .sort({ createdAt: -1 });
       
       return sessions;

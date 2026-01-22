@@ -108,22 +108,24 @@ export default function Analytics() {
       disgusted: 0,
     };
 
-    const emotionsByDay = {};
+    // For real-time line chart: collect all emotions with timestamps
+    const emotionTimeseries = [];
 
-    sessionList.forEach(session => {
+    sessionList.forEach((session, sessionIndex) => {
       try {
-        const date = new Date(session.createdAt).toLocaleDateString();
-        if (!emotionsByDay[date]) {
-          emotionsByDay[date] = { ...emotionCounts };
-        }
-
         (session.emotions || []).forEach(emotion => {
           try {
-            // emotion object has emotion (string) and confidence (number)
+            // emotion object has emotion (string), confidence (number), and timestamp
             const exp = emotion?.emotion || 'neutral';
             if (emotionCounts.hasOwnProperty(exp)) {
               emotionCounts[exp]++;
-              emotionsByDay[date][exp]++;
+              emotionTimeseries.push({
+                timestamp: emotion?.timestamp || session.createdAt,
+                emotion: exp,
+                confidence: emotion?.confidence || 0,
+                index: emotionTimeseries.length,
+                sessionNum: sessionList.length - sessionIndex
+              });
             }
           } catch (e) {
             console.error('Error processing emotion:', emotion, e);
@@ -156,84 +158,57 @@ export default function Analytics() {
       ],
     };
 
-    // Time series line chart
-    const sortedDates = Object.keys(emotionsByDay).sort((a, b) => new Date(a) - new Date(b));
-    
+    // Real-time line chart - show emotion detection sequence
+    const emotionColors = {
+      happy: '#fbbf24',
+      sad: '#3b82f6',
+      angry: '#ef4444',
+      surprised: '#a78bfa',
+      neutral: '#9ca3af',
+      fearful: '#d8b4fe',
+      disgusted: '#4ade80',
+    };
+
     let lineData;
-    if (sortedDates.length > 0) {
-      // Filter emotions that have at least one occurrence
-      const emotionsWithData = Object.keys(emotionCounts).filter(e => emotionCounts[e] > 0);
-      
+    if (emotionTimeseries.length > 0) {
+      // Real-time: each emotion detection is a point
       lineData = {
-        labels: sortedDates,
-        datasets: emotionsWithData.map((emotion, idx) => ({
-          label: emotion.charAt(0).toUpperCase() + emotion.slice(1),
-          data: sortedDates.map(date => emotionsByDay[date][emotion] || 0),
-          borderColor: [
-            '#fbbf24',
-            '#3b82f6',
-            '#ef4444',
-            '#a78bfa',
-            '#9ca3af',
-            '#d8b4fe',
-            '#4ade80',
-          ][idx],
-          backgroundColor: `rgba(${[
-            [251, 191, 36],
-            [59, 130, 246],
-            [239, 68, 68],
-            [167, 139, 250],
-            [156, 163, 175],
-            [216, 180, 254],
-            [74, 222, 128],
-          ][idx].join(',')}, 0.1)`,
-          tension: 0.4,
-          fill: true,
-        })),
+        labels: emotionTimeseries.map((e, idx) => `#${idx + 1}`),
+        datasets: [
+          {
+            label: 'Emotion Detections (Real-time)',
+            data: emotionTimeseries.map((e, idx) => ({
+              x: idx,
+              y: 1,
+              emotion: e.emotion,
+              confidence: e.confidence,
+              timestamp: e.timestamp
+            })),
+            borderColor: emotionTimeseries.map(e => emotionColors[e.emotion] || '#9ca3af'),
+            backgroundColor: emotionTimeseries.map(e => emotionColors[e.emotion] || '#9ca3af'),
+            pointRadius: 8,
+            pointHoverRadius: 10,
+            showLine: true,
+            tension: 0.2,
+            fill: false,
+            borderWidth: 0,
+          }
+        ],
       };
     } else {
-      // Fallback: group by session instead of date
-      const emotionsWithData = Object.keys(emotionCounts).filter(e => emotionCounts[e] > 0);
-      
       lineData = {
-        labels: sessionList.map((s, idx) => `Session ${idx + 1}`),
-        datasets: emotionsWithData.map((emotion, idx) => ({
-          label: emotion.charAt(0).toUpperCase() + emotion.slice(1),
-          data: sessionList.map(session => {
-            const count = (session.emotions || []).filter(e => (e?.emotion || 'neutral') === emotion).length;
-            return count;
-          }),
-          borderColor: [
-            '#fbbf24',
-            '#3b82f6',
-            '#ef4444',
-            '#a78bfa',
-            '#9ca3af',
-            '#d8b4fe',
-            '#4ade80',
-          ][idx % 7],
-          backgroundColor: `rgba(${[
-            [251, 191, 36],
-            [59, 130, 246],
-            [239, 68, 68],
-            [167, 139, 250],
-            [156, 163, 175],
-            [216, 180, 254],
-            [74, 222, 128],
-          ][idx].join(',')}, 0.1)`,
-          tension: 0.4,
-          fill: true,
-        })),
-      };
+        labels: [],
+        datasets: [{ label: 'No data', data: [] }]
+      }
     }
 
-    // Bar chart for session comparison
+    // Bar chart for session comparison - use continuous numbering
     const barData = {
-      labels: sessionList.slice(-10).map((s, idx) => `Session ${idx + 1}`),
+      labels: sessionList.map((s, idx) => `Session ${sessionList.length - idx}`),
       datasets: [
         {
           label: 'Emotions Recorded',
-          data: sessionList.slice(-10).map(s => s.emotions?.length || 0),
+          data: sessionList.map(s => s.emotions?.length || 0),
           backgroundColor: '#4f46e5',
           borderColor: '#4c1d95',
           borderWidth: 1,
@@ -385,30 +360,52 @@ export default function Analytics() {
                       responsive: true,
                       maintainAspectRatio: false,
                       interaction: {
-                        mode: 'index',
+                        mode: 'nearest',
                         intersect: false,
                       },
                       plugins: {
                         legend: {
                           display: true,
                           position: 'top',
-                          labels: {
-                            boxWidth: 15,
-                            padding: 15,
-                          },
+                        },
+                        tooltip: {
+                          enabled: true,
+                          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                          titleColor: '#fff',
+                          bodyColor: '#fff',
+                          borderColor: '#fff',
+                          borderWidth: 1,
+                          padding: 12,
+                          displayColors: false,
+                          callbacks: {
+                            title: (context) => {
+                              const dataPoint = context[0]?.raw;
+                              if (dataPoint?.timestamp) {
+                                return new Date(dataPoint.timestamp).toLocaleString();
+                              }
+                              return `Detection #${context[0]?.dataIndex + 1}`;
+                            },
+                            label: (context) => {
+                              const dataPoint = context.raw;
+                              return [
+                                `Emotion: ${dataPoint.emotion?.toUpperCase()}`,
+                                `Confidence: ${(dataPoint.confidence * 100).toFixed(1)}%`
+                              ];
+                            }
+                          }
                         },
                       },
                       scales: {
                         y: {
+                          display: false,
                           beginAtZero: true,
-                          ticks: {
-                            stepSize: 1,
-                          },
+                          max: 1,
                         },
                         x: {
                           ticks: {
                             maxRotation: 45,
                             minRotation: 0,
+                            maxTicksLimit: 20,
                           },
                         },
                       },
