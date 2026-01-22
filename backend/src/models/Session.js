@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const SessionSchema = new mongoose.Schema({
-  userId: {
-    type: String,
-    required: true
+  user_id: {
+    type: Number,
+    required: true,
+    index: true  // Index for faster queries
   },
   emotions: [{
     emotion: String,
@@ -14,6 +15,11 @@ const SessionSchema = new mongoose.Schema({
     }
   }],
   createdAt: {
+    type: Date,
+    default: Date.now,
+    index: true  // Index for faster date queries
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }

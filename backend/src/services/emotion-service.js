@@ -1,9 +1,31 @@
 const Session = require('../models/Session');
 
 class EmotionService {
+  async getNextUserId() {
+    try {
+      // Get the highest user_id from database and increment
+      const lastSession = await Session.findOne()
+        .sort({ user_id: -1 })
+        .select('user_id');
+      
+      return lastSession ? lastSession.user_id + 1 : 1;
+    } catch (error) {
+      console.error('Error getting next userId:', error);
+      return 1;  // Fallback to 1
+    }
+  }
+
   async createSession(userId) {
     try {
-      return await Session.create({ userId });
+      // If userId not provided, auto-generate next one
+      const finalUserId = userId || (await this.getNextUserId());
+      
+      return await Session.create({ 
+        user_id: finalUserId,
+        emotions: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
     } catch (error) {
       throw new Error(`Failed to create session: ${error.message}`);
     }

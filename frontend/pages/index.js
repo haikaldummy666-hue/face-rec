@@ -20,7 +20,8 @@ export default function Home() {
   useEffect(() => {
     const initSession = async () => {
       try {
-        const session = await createSession('user123');
+        // Auto-increment user_id starts from 1
+        const session = await createSession(1);
         setSessionId(session._id);
       } catch (error) {
         console.error('Failed to create session:', error);
