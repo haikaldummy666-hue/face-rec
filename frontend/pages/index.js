@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
-import VideoFeed from '@/components/VideoFeed/VideoFeed';
+import dynamic from 'next/dynamic';
 import SessionRecorder from '@/components/SessionRecorder/SessionRecorder';
 // import HeatmapView from '@/components/HeatmapView/HeatmapView';
 import { createSession } from '@/lib/session-manager';
 import styles from '@/styles/Home.module.css';
 //import ExportData from '@/components/ExportData/ExportData';
 import { generateEmotionPDF } from '@/lib/pdf';
+
+const VideoFeed = dynamic(() => import('@/components/VideoFeed/VideoFeed'), {
+  ssr: false,
+  loading: () => <div>Loading video feed...</div>
+});
 
 export default function Home() {
   const [sessionId, setSessionId] = useState(null);
