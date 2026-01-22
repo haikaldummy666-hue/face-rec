@@ -15,9 +15,11 @@ export default function Dashboard() {
   const fetchSessions = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      console.log('Fetching sessions from:', apiUrl);
       const response = await fetch(`${apiUrl}/sessions`);
       if (response.ok) {
         const data = await response.json();
+        console.log('Sessions fetched:', data);
         setSessions(Array.isArray(data) ? data : []);
         setError(null);
       } else {
@@ -189,7 +191,7 @@ export default function Dashboard() {
                 {sessions.map((session) => {
                   const emotionCounts = {};
                   (session.emotions || []).forEach(emotion => {
-                    const exp = emotion.expressions?.[0] || 'neutral';
+                    const exp = emotion?.emotion || 'neutral';
                     emotionCounts[exp] = (emotionCounts[exp] || 0) + 1;
                   });
                   
