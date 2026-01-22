@@ -70,9 +70,22 @@ class EmotionService {
 
   async getAllSessions() {
     try {
-      const sessions = await Session.find()
-        .select('_id user_id createdAt emotions')
+      let sessions = await Session.find()
         .sort({ createdAt: -1 });
+      
+      // Ensure all sessions have user_id field
+      sessions = sessions.map((session, index) => {
+        if (!session.user_id) {
+          session.user_id = index + 1;  // Assign based on index if missing
+        }
+        return session;
+      });
+      
+      console.log('Fetched sessions:', sessions.map(s => ({
+        _id: s._id,
+        user_id: s.user_id,
+        emotions_count: s.emotions?.length || 0
+      })));
       
       return sessions;
     } catch (error) {
