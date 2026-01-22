@@ -14,7 +14,7 @@ const VideoFeed = ({ onEmotionDetected }) => {
   useEffect(() => {
     let animationFrame;
     let lastProcessTime = 0;
-    const DETECTION_INTERVAL = 500; // milliseconds (500ms = 2 per second)
+    const DETECTION_INTERVAL = 2000; // milliseconds (2000ms = 1 per 2 seconds)
     
     const processFrame = async () => {
       const now = Date.now();
