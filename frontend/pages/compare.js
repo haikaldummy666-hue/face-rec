@@ -170,7 +170,7 @@ export default function CompareSessions() {
   }
 
   // Calculate comparison stats
-  const stats = sessions.map(session => {
+  const stats = sessions.map((session) => {
     const emotions = {};
     session.emotions.forEach(emotion => {
       const exp = emotion?.emotion || 'neutral';
