@@ -93,7 +93,7 @@ export default function Home() {
               fontSize: '16px',
               fontWeight: 'bold'
             }}>
-              ΓåÉ Back to Dashboard
+              Back to Dashboard
             </button>
           </Link>
           <Link href="/analytics">
@@ -107,7 +107,7 @@ export default function Home() {
               fontSize: '16px',
               fontWeight: 'bold'
             }}>
-              ≡ƒôè Analytics
+              Analytics
             </button>
           </Link>
         </div>

@@ -87,7 +87,15 @@ export default function Analytics() {
   }, []);
 
   const processAnalytics = (sessionList) => {
-    if (sessionList.length === 0) return;
+    // Initialize charts even with empty data
+    if (sessionList.length === 0) {
+      setChartData({
+        doughnut: { labels: [], datasets: [{ data: [] }] },
+        line: { labels: [], datasets: [] },
+        bar: { labels: [], datasets: [] }
+      });
+      return;
+    }
 
     // Aggregate emotion distribution
     const emotionCounts = {
@@ -364,22 +372,39 @@ export default function Analytics() {
             {/* Time Series Chart */}
             <div className="bg-white rounded-lg shadow p-6 mb-8">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Emotion Trends Over Time</h2>
-              {chartData?.line && chartData.line.labels && chartData.line.labels.length > 0 ? (
-                <div style={{ height: '400px' }}>
+              {chartData?.line?.labels?.length > 0 && chartData?.line?.datasets?.length > 0 ? (
+                <div style={{ height: '400px', position: 'relative' }}>
                   <Line
                     data={chartData.line}
                     options={{
                       responsive: true,
                       maintainAspectRatio: false,
+                      interaction: {
+                        mode: 'index',
+                        intersect: false,
+                      },
                       plugins: {
                         legend: {
                           display: true,
                           position: 'top',
+                          labels: {
+                            boxWidth: 15,
+                            padding: 15,
+                          },
                         },
                       },
                       scales: {
                         y: {
                           beginAtZero: true,
+                          ticks: {
+                            stepSize: 1,
+                          },
+                        },
+                        x: {
+                          ticks: {
+                            maxRotation: 45,
+                            minRotation: 0,
+                          },
                         },
                       },
                     }}
